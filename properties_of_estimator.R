@@ -23,5 +23,8 @@ vbeta <- replicate(n = N, expr = (function(i) {
   return(xt_i);
   })(), simplify = T);
 
+cat("The histogram shows that we have different realizations of our estimated parameter.\r\n")
+cat("These realizations depend on the sample of observations we have used to estimate our parameter.\r\n")
+cat("As we can see the different estimates are quite similar and very close to about 0.139.\r\n")
 hist(vbeta, main = "Histogram of model beta")
 abline(v = mean(vbeta), col = "red");
