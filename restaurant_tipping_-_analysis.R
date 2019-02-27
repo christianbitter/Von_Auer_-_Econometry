@@ -58,6 +58,59 @@ cat("test the assumptions of the model - correlation of residuals\r\n");
 # plot the residuals and residuals vs. attributes
 # perform a test for autocorrelated residuals
 r <- residuals(lm.21);
+f_i <- predict(lm.21);
+
+# the sum of residuals should approach zero
+s_r <- sum(r);
+cat("The sum of residuals: ", s_r, "\r\n");
+
+# https://en.wikipedia.org/wiki/Residual_sum_of_squares
+# total sum of squares = explained sum of squares + residual sum of squares.
+# The better the linear regression (on the right) fits the data in comparison to the simple average (on the left graph), 
+# the closer the value of R^2 is to 1. 
+# https://en.wikipedia.org/wiki/Coefficient_of_determination
+alpha  <- 0;
+beta   <- lm.21$coefficients[1];
+y_mu   <- mean(df$Yt);
+x_mu   <- mean(df$Xt);
+r_i    <- df$Yt - f_i;
+ss_tot <- sum((df$Yt - y_mu)^2);
+ss_reg <- sum((f_i - y_mu)^2);
+ss_res <- sum((df$Yt - f_i)^2);
+C_o_Det <- ss_reg / ss_tot;
+cat("Coefficient of Determination (R^2) = ", C_o_Det, 
+    " total sum of squares vs. regression sum of squares: ", ss_tot, "/", ss_reg, "\r\n");
+
+df_r <- data.frame(x = df$Xt, y = df$Yt, 
+                   yhat = f_i, r_i = r_i, xri = df$Xt + r_i,
+                   SS_tot = (df$Yt - y_mu)^2, SS_res = (df$Yt - f_i)^2);
+df_r %>%
+  ggplot(aes(x = x, y = y)) + 
+  geom_point(aes(col = "Data")) +
+  geom_point(aes(y = yhat, col = "Yhat")) + 
+  geom_hline(aes(yintercept = y_mu), col = "gray", linetype = 2) + 
+  geom_vline(aes(xintercept = x_mu), col = "gray", linetype = 2) + 
+  geom_abline(slope = beta, intercept = alpha, col = "gray") + 
+  # geom_point(aes(y = SS_tot, col = "Total Sum of Squares"), size = 1) +
+  # geom_point(aes(y = SS_res, col = "Residual Sum of Squares"), size = 1) + 
+  theme_light() + 
+  labs(x = "x", y = "y", title = "Residual Analysis",
+       subtitle = "Comparison of Residual and Total Sum of Squares");
+
+# TODO:
+df_r %>%
+  ggplot(aes(x = x, y = y)) + 
+  geom_point(aes(col = "Data")) +
+  geom_point(aes(y = yhat, col = "Yhat"), size = 1) + 
+  geom_rect(aes(xmin = x, ymin = y, xmax = x + (y - yhat)^2, ymax = yhat)) + 
+  geom_abline(slope = beta, intercept = alpha, col = "gray") + 
+  # geom_point(aes(y = SS_tot, col = "Total Sum of Squares"), size = 1) +
+  # geom_point(aes(y = SS_res, col = "Residual Sum of Squares"), size = 1) + 
+  theme_light() + 
+  labs(x = "x", y = "y", title = "Residual Analysis",
+       subtitle = "Comparison of Residual and Total Sum of Squares");
+
+
 # in order to check for association we regress residuals - the simplest approach
 # and now can check for the slope coefficient's signifance
 # we could also aim for the breusch godfrey test or the durbin-watson test
