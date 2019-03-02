@@ -28,3 +28,7 @@ cat("These realizations depend on the sample of observations we have used to est
 cat("As we can see the different estimates are quite similar and very close to about 0.139.\r\n")
 hist(vbeta, main = "Histogram of model beta")
 abline(v = mean(vbeta), col = "red");
+
+
+# in order to understand better that indeed our tips are a random variable two,
+# we are going to simulate independent samples/ realizations
