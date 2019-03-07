@@ -1,3 +1,9 @@
+tipping_df <- function(){
+  return(
+    read.csv("data/restaurant_tipping.csv", header = T, sep = ";", dec = ",")
+  );
+}
+
 sim_chi2 <- function(degree_of_freedom = 1, M = 10) {
   if (degree_of_freedom < 1) stop("Degree of Freedom < 1", call. = T);
   

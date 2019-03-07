@@ -5,7 +5,9 @@ library(ggthemes);
 library(dplyr);
 library(lmtest);
 
-df <- read.csv("restaurant_tipping.csv", header = T, sep = ";", dec = ",");
+source("common.R")
+
+df <- tipping_df();
 
 # let's graphically explore the data
 
@@ -151,7 +153,17 @@ df %>% ggplot(aes(sample = residuals)) + stat_qq() + stat_qq_line() +
   labs(title = "QQPlot of Residuals",
        subtitle = "Ideally all of our residuals lay on the midpoint line.");
 
-# now perform some inference on some artificially created tips
-
-# now perform a predictive modeling, splitting into train/test or some k-fold sample
-# based approach.
+# now perform some inference on some artificially created meal prices
+# let's assume there was someone who paid 1, 5 euro and 70, 100 euro for our meal and see what
+# what happens
+test_df <- data.frame(Xt = c(1, 5, 70, 100));
+test_df$Yt <- predict(lm.21, test_df);
+df %>%
+  ggplot(aes(x = Xt, y = Yt)) + 
+  geom_point(colour = "red") + 
+  geom_point(data = test_df, aes(x = Xt, y = Yt), col = "blue") + 
+  labs(title = "Restaurant Tips",
+       subtitle = "Exploring actual spent and tips (red) and simulated (blue)",
+       x = "Pay Amout [€]", y = "Tip Amount [€]",
+       caption = "Christian Bitter") + 
+  theme_light()
